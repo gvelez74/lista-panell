@@ -1562,25 +1562,12 @@ function teURL(v) { return v && v !== '-' && v !== 'None' && String(v).startsWit
 
 // Crida directa al MCP de Llista
 async function mcpViaAPI(toolName, toolInput = {}) {
-  const res = await fetch('https://llista.lacuinadel.cat/public/mcp', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      jsonrpc: '2.0',
-      id: Date.now(),
-      method: 'tools/call',
-      params: {
-        name: toolName,
-        arguments: toolInput
-      }
-    })
-  });
+  const params = new URLSearchParams();
+  Object.entries(toolInput).forEach(([k, v]) => { if (v !== undefined) params.append(k, String(v)); });
+  const url = `https://llista.lacuinadel.cat/public/mcp/${toolName}?${params.toString()}`;
+  const res = await fetch(url);
   if (!res.ok) throw new Error(`MCP HTTP ${res.status}`);
-  const data = await res.json();
-  if (data.error) throw new Error(data.error.message || 'Error MCP');
-  const text = data.result?.content?.[0]?.text;
-  if (!text) throw new Error('Sense resposta del MCP');
-  return JSON.parse(text);
+  return await res.json();
 }
 
 async function fetchDadesMCP() {
