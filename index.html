@@ -938,11 +938,49 @@ label { font-size: 11px; font-weight: 600; color: var(--text-secondary); display
 .tp-user-card input:focus { border-color: var(--accent); }
 .tp-user-card button { width: 100%; padding: 9px; font-size: 13px; font-weight: 700; border: none; border-radius: var(--radius-md); background: var(--accent); color: #fff; cursor: pointer; font-family: var(--font); }
 .tp-user-card button:hover { background: var(--accent-hover); }
+  /* ── LOGIN OVERLAY ── */
+#login-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: #F5F4EF;
+  display: flex; align-items: center; justify-content: center;
+}
+.login-card {
+  background: #fff; border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 16px; padding: 40px 44px; width: 360px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08); text-align: center;
+}
+.login-logo { width: 48px; height: 48px; background: #1D9E75; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: #fff; margin: 0 auto 20px; }
+.login-title { font-size: 20px; font-weight: 700; color: #1A1A1A; letter-spacing: -0.4px; margin-bottom: 6px; }
+.login-sub { font-size: 12px; color: #9A9A9A; margin-bottom: 28px; line-height: 1.6; }
+.login-name-input { width: 100%; padding: 11px 14px; border: 1.5px solid rgba(0,0,0,0.14); border-radius: 9px; font-size: 14px; font-family: 'Montserrat', sans-serif; font-weight: 500; color: #1A1A1A; background: #F9F8F4; text-align: center; outline: none; transition: border-color 0.15s; margin-bottom: 12px; box-sizing: border-box; }
+.login-name-input:focus { border-color: #1D9E75; background: #fff; }
+.login-name-input::placeholder { color: #BBBBBB; font-weight: 400; }
+.login-btn { width: 100%; padding: 11px; background: #1D9E75; color: #fff; border: none; border-radius: 9px; font-size: 13px; font-weight: 700; font-family: 'Montserrat', sans-serif; cursor: pointer; transition: background 0.15s; }
+.login-btn:hover { background: #0F6E56; }
+.login-footer-text { font-size: 10.5px; color: #BBBBBB; margin-top: 16px; line-height: 1.5; }
+
+/* ── USER BADGE SIDEBAR ── */
+.sidebar-user { padding: 10px; border-top: 1px solid rgba(0,0,0,0.08); flex-shrink: 0; }
+.user-pill { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 9px; background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.07); }
+.user-av { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+.user-name { font-size: 12px; font-weight: 600; color: #1A1A1A; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-change-btn { font-size: 10px; color: #9A9A9A; font-weight: 600; background: none; border: 1px solid rgba(0,0,0,0.08); cursor: pointer; font-family: 'Montserrat', sans-serif; padding: 3px 7px; border-radius: 5px; transition: all 0.15s; white-space: nowrap; flex-shrink: 0; }
+.user-change-btn:hover { color: #DC2626; border-color: rgba(220,38,38,0.3); }
 
 </style>
 </head>
 <body>
-
+<!-- LOGIN OVERLAY -->
+<div id="login-overlay">
+  <div class="login-card">
+    <div class="login-logo">Ll</div>
+    <div class="login-title">Benvingut al panell</div>
+    <div class="login-sub">Introdueix el teu nom per identificar<br>els canvis que facis al projecte</div>
+    <input class="login-name-input" id="login-name-input" type="text" placeholder="El teu nom..." maxlength="40" autocomplete="name" />
+    <button class="login-btn" id="login-btn">Entrar al panell →</button>
+    <div class="login-footer-text">Llista.cat · Accent Obert<br>El nom es guarda localment al teu navegador</div>
+  </div>
+</div>
 <div class="app">
 
   <!-- ══ SIDEBAR ══ -->
