@@ -3111,7 +3111,72 @@ async function assistentSend() {
   if (sendBtn) sendBtn.disabled = false;
   if (input) input.focus();
 }
+  /* ── IDENTIFICACIÓ D'USUARI ── */
+const USER_KEY = 'llista_user_nom';
+const AV_COLORS = [['#D4E4F7','#1d4ed8'],['#D4F0E4','#15803d'],['#F7ECD4','#b45309'],['#E8D4F7','#6d28d9'],['#F7D4D9','#be123c'],['#D4F0F7','#0e7490']];
+
+function getPanellUser() { return localStorage.getItem(USER_KEY) || ''; }
+function getAvColors(name) { return AV_COLORS[(name||'A').charCodeAt(0) % AV_COLORS.length]; }
+function getInitials(name) { return (name||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2); }
+
+function panellLogin(name) {
+  localStorage.setItem(USER_KEY, name);
+  tpUser = name;
+  localStorage.setItem('tp_llista_user', name);
+  updateSidebarUser(name);
+  document.getElementById('login-overlay').style.display = 'none';
+}
+
+function panellLogout() {
+  if (!confirm('Vols canviar de nom?')) return;
+  localStorage.removeItem(USER_KEY);
+  localStorage.removeItem('tp_llista_user');
+  tpUser = '';
+  document.getElementById('sidebar-user').style.display = 'none';
+  document.getElementById('login-overlay').style.display = 'flex';
+  const input = document.getElementById('login-name-input');
+  input.value = '';
+  setTimeout(() => input.focus(), 100);
+}
+
+function updateSidebarUser(name) {
+  const badge = document.getElementById('sidebar-user');
+  const av = document.getElementById('sidebar-user-av');
+  const nm = document.getElementById('sidebar-user-name');
+  if (!badge) return;
+  const [bg, tc] = getAvColors(name);
+  badge.style.display = '';
+  av.style.background = bg; av.style.color = tc;
+  av.textContent = getInitials(name);
+  nm.textContent = name;
+}
+
+function initLogin() {
+  const input = document.getElementById('login-name-input');
+  const btn = document.getElementById('login-btn');
+
+  function doLogin() {
+    const name = input.value.trim();
+    if (!name) { input.style.borderColor = '#DC2626'; input.focus(); setTimeout(() => input.style.borderColor = '', 1500); return; }
+    panellLogin(name);
+  }
+
+  btn.addEventListener('click', doLogin);
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+  const saved = getPanellUser();
+  if (saved) {
+    document.getElementById('login-overlay').style.display = 'none';
+    tpUser = saved;
+    localStorage.setItem('tp_llista_user', saved);
+    updateSidebarUser(saved);
+  } else {
+    document.getElementById('login-overlay').style.display = 'flex';
+    setTimeout(() => input.focus(), 150);
+  }
+}
 window.addEventListener('DOMContentLoaded', () => {
+  initLogin();
   updateApiStatus();
   loadAnalisi();
 });
