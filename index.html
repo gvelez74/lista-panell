@@ -1029,7 +1029,13 @@ label { font-size: 11px; font-weight: 600; color: var(--text-secondary); display
         Finances
       </div>
     </nav>
-
+<div class="sidebar-user" id="sidebar-user" style="display:none;">
+  <div class="user-pill">
+    <div class="user-av" id="sidebar-user-av"></div>
+    <span class="user-name" id="sidebar-user-name"></span>
+    <button class="user-change-btn" onclick="panellLogout()">Canviar</button>
+  </div>
+</div>
     <div class="sidebar-footer">
       <div class="api-pill" onclick="openSettings()">
         <div class="status-dot" id="api-dot" style="background:var(--text-muted)"></div>
