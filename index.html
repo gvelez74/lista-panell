@@ -1560,45 +1560,33 @@ function normGen(g) {
 }
 function teURL(v) { return v && v !== '-' && v !== 'None' && String(v).startsWith('http'); }
 
-// Crida l'API d'Anthropic amb MCP i retorna el JSON del primer tool_use executat
-async function mcpViaAPI(prompt) {
-  const key = getApiKey();
-  if (!key) throw new Error('Cal configurar la API Key d\'Anthropic primer');
-  const res = await fetch(API_URL, {
+// Crida directa al MCP de Llista
+async function mcpViaAPI(toolName, toolInput = {}) {
+  const res = await fetch('https://llista.lacuinadel.cat/public/mcp', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: MODEL,
-      max_tokens: 8192,
-      system: 'Executa l\'eina MCP demanada i ja està. No afegeixis text addicional.',
-      tools: MCP_TOOLS,
-      tool_choice: { type: 'any' },
-      messages: [{ role: 'user', content: prompt }],
-      mcp_servers: [{ type: 'url', url: MCP_BASE, name: 'llista-mcp' }]
+      jsonrpc: '2.0',
+      id: Date.now(),
+      method: 'tools/call',
+      params: {
+        name: toolName,
+        arguments: toolInput
+      }
     })
   });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error?.message || `API ${res.status}`);
-  }
+  if (!res.ok) throw new Error(`MCP HTTP ${res.status}`);
   const data = await res.json();
-  // L'eina s'ha executat i el resultat està dins mcp_tool_result o tool_use
-  for (const block of (data.content || [])) {
-    if (block.type === 'mcp_tool_result' || block.type === 'tool_result') {
-      const txt = block.content?.[0]?.text || block.content || '';
-      return JSON.parse(typeof txt === 'string' ? txt : JSON.stringify(txt));
-    }
-    if (block.type === 'text' && block.text?.trim().startsWith('{')) {
-      return JSON.parse(block.text.trim());
-    }
-  }
-  throw new Error('El model no ha retornat cap resultat d\'eina');
+  if (data.error) throw new Error(data.error.message || 'Error MCP');
+  const text = data.result?.content?.[0]?.text;
+  if (!text) throw new Error('Sense resposta del MCP');
+  return JSON.parse(text);
 }
 
 async function fetchDadesMCP() {
   // Crides seqüencials via API d'Anthropic + MCP
-  const counts = await mcpViaAPI('Executa get_counts sense cap filtre');
-  const projResp = await mcpViaAPI('Executa get_projectes amb limit 5000');
+  const counts = await mcpViaAPI('get_counts', {});
+  const projResp = await mcpViaAPI('get_projectes', { limit: 5000 });
 
   // get_counts retorna {projectes, posts, historica, transcripcions} directament
   const countsData = counts.projectes !== undefined ? counts : (counts.data || counts);
